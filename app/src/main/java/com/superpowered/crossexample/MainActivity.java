@@ -7,7 +7,9 @@ import android.view.MenuItem;
 import android.media.AudioManager;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+
 import java.io.IOException;
+
 import android.os.Build;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -35,54 +37,23 @@ public class MainActivity extends AppCompatActivity {
         if (buffersizeString == null) buffersizeString = "512";
 
         // Files under res/raw are not zipped, just copied into the APK. Get the offset and length to know where our files are located.
-        AssetFileDescriptor fd0 = getResources().openRawResourceFd(R.raw.lycka), fd1 = getResources().openRawResourceFd(R.raw.nuyorica);
-        int fileAoffset = (int)fd0.getStartOffset(), fileAlength = (int)fd0.getLength(), fileBoffset = (int)fd1.getStartOffset(), fileBlength = (int)fd1.getLength();
+        AssetFileDescriptor fd0 = getResources().openRawResourceFd(R.raw.lycka);
+        int fileAoffset = (int) fd0.getStartOffset();
+        int fileAlength = (int) fd0.getLength();
+
         try {
             fd0.getParcelFileDescriptor().close();
-            fd1.getParcelFileDescriptor().close();
         } catch (IOException e) {
             android.util.Log.d("", "Close error.");
         }
 
         // Arguments: path to the APK file, offset and length of the two resource files, sample rate, audio buffer size.
-        SuperpoweredExample(Integer.parseInt(samplerateString), Integer.parseInt(buffersizeString), getPackageResourcePath(), fileAoffset, fileAlength, fileBoffset, fileBlength);
-
-        // crossfader events
-        final SeekBar crossfader = (SeekBar)findViewById(R.id.crossFader);
-        if (crossfader != null) crossfader.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                onCrossfader(progress);
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-            public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        // fx fader events
-        final SeekBar fxfader = (SeekBar)findViewById(R.id.fxFader);
-        if (fxfader != null) fxfader.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                onFxValue(progress);
-            }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                onFxValue(seekBar.getProgress());
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                onFxOff();
-            }
-        });
-
-        // fx select event
-        final RadioGroup group = (RadioGroup)findViewById(R.id.radioGroup1);
-        if (group != null) group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
-                RadioButton checkedRadioButton = (RadioButton)radioGroup.findViewById(checkedId);
-                onFxSelect(radioGroup.indexOfChild(checkedRadioButton));
-            }
-        });
+        SuperpoweredExample(
+                Integer.parseInt(samplerateString),
+                Integer.parseInt(buffersizeString),
+                getPackageResourcePath(),
+                fileAoffset,
+                fileAlength);
     }
 
     public void SuperpoweredExample_PlayPause(View button) {  // Play/pause.
@@ -114,12 +85,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private native void SuperpoweredExample(int samplerate, int buffersize, String apkPath, int fileAoffset, int fileAlength, int fileBoffset, int fileBlength);
+    private native void SuperpoweredExample(int samplerate, int buffersize, String apkPath, int fileAoffset, int fileAlength);
+
     private native void onPlayPause(boolean play);
-    private native void onCrossfader(int value);
-    private native void onFxSelect(int value);
-    private native void onFxOff();
-    private native void onFxValue(int value);
+
 
     static {
         System.loadLibrary("SuperpoweredExample");

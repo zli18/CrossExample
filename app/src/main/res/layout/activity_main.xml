@@ -15,49 +15,6 @@
         android:onClick="SuperpoweredExample_PlayPause"
         android:text="PLAY" />
 
-    <SeekBar
-        android:id="@+id/crossFader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/playPause"
-        android:layout_marginTop="35dp" />
 
-    <RadioGroup
-        android:id="@+id/radioGroup1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/crossFader"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
-        android:orientation="horizontal" >
-
-        <RadioButton
-            android:id="@+id/radio0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="FLANGER" />
-
-        <RadioButton
-            android:id="@+id/radio1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="FILTER" />
-
-        <RadioButton
-            android:id="@+id/radio2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ROLL" />
-    </RadioGroup>
-
-    <SeekBar
-        android:id="@+id/fxFader"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/radioGroup1"
-        android:layout_marginTop="35dp" />
 
 </RelativeLayout>
