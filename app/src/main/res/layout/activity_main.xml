@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp"
-        android:onClick="SuperpoweredExample_PlayPause"
+        android:onClick="SuperpoweredPlayer_PlayPause"
         android:text="PLAY" />
 
 
