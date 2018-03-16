@@ -7,7 +7,7 @@ android { // main settings for your application
     buildToolsVersion = '27'
 
     defaultConfig {
-        applicationId "com.superpowered.crossexample"
+        applicationId "com.superpowered.player"
         minSdkVersion 16 // more than 95% of all active Android devices
         targetSdkVersion 23
         versionCode 1

@@ -17,10 +17,12 @@ import android.view.View;
 
 import cafe.adriel.androidaudioconverter.AndroidAudioConverter;
 import cafe.adriel.androidaudioconverter.callback.IConvertCallback;
+import cafe.adriel.androidaudioconverter.callback.ILoadCallback;
 import cafe.adriel.androidaudioconverter.model.AudioFormat;
 
 public class MainActivity extends AppCompatActivity {
     boolean playing = false;
+    String samplerateString = null, buffersizeString = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Get the device's sample rate and buffer size to enable low-latency Android audio output, if available.
-        String samplerateString = null, buffersizeString = null;
+
         if (Build.VERSION.SDK_INT >= 17) {
             AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
             samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -38,33 +40,42 @@ public class MainActivity extends AppCompatActivity {
         if (buffersizeString == null) buffersizeString = "512";
 
         // Files under res/raw are not zipped, just copied into the APK. Get the offset and length to know where our files are located.
-        AssetFileDescriptor fd0 = getResources().openRawResourceFd(R.raw.mx12_ifbirdwants_loop_mp3);
-        int fileAoffset = (int) fd0.getStartOffset();
-        int fileAlength = (int) fd0.getLength();
+        //AssetFileDescriptor fd0 = getResources().openRawResourceFd(R.raw.mx12_ifbirdwants_loop_mp3);
+        //int fileAoffset = (int) fd0.getStartOffset();
+        //int fileAlength = (int) fd0.getLength();
 
-        try {
-            fd0.getParcelFileDescriptor().close();
-        } catch (IOException e) {
-            android.util.Log.d("", "Close error.");
-        }
+        AndroidAudioConverter.load(this, new ILoadCallback() {
+            @Override
+            public void onSuccess() {
+                // Great!
+                convert("mx12-ifbirdwants-loop.mp3");
+            }
+            @Override
+            public void onFailure(Exception error) {
+                // FFmpeg is not supported by device
+            }
+        });
 
-        // Arguments: path to the APK file, offset and length of the two resource files, sample rate, audio buffer size.
-        SuperpoweredExample(
-                Integer.parseInt(samplerateString),
-                Integer.parseInt(buffersizeString),
-                getPackageResourcePath(),
-                fileAoffset,
-                fileAlength);
+
     }
 
-    private  void convert(String filename)
-    {
+    private void convert(String filename) {
         File mp3File = new File(this.getFilesDir(), filename);
         IConvertCallback callback = new IConvertCallback() {
             @Override
             public void onSuccess(File convertedFile) {
                 // So fast? Love it!
+                File file = new File(MainActivity.this.getFilesDir(), "mx12-ifbirdwants-loop.wav");
+                final int fileLengthBytes = (int) file.length();
+
+                SuperpoweredExample(
+                        Integer.parseInt(samplerateString),
+                        Integer.parseInt(buffersizeString),
+                        file.getPath(),
+                        0,
+                        fileLengthBytes);
             }
+
             @Override
             public void onFailure(Exception error) {
                 // Oops! Something went wrong
