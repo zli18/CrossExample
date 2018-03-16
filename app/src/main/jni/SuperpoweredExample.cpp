@@ -76,12 +76,12 @@ bool SuperpoweredExample::process(short int *output, unsigned int numberOfSample
 
 static SuperpoweredExample *example = NULL;
 
-extern "C" JNIEXPORT void Java_com_superpowered_crossexample_MainActivity_SuperpoweredExample(JNIEnv *javaEnvironment, jobject __unused obj, jint samplerate, jint buffersize, jstring apkPath, jint fileAoffset, jint fileAlength, jint fileBoffset, jint fileBlength) {
+extern "C" JNIEXPORT void Java_com_superpowered_player_MainActivity_SuperpoweredExample(JNIEnv *javaEnvironment, jobject __unused obj, jint samplerate, jint buffersize, jstring apkPath, jint fileAoffset, jint fileAlength, jint fileBoffset, jint fileBlength) {
     const char *path = javaEnvironment->GetStringUTFChars(apkPath, JNI_FALSE);
     example = new SuperpoweredExample((unsigned int)samplerate, (unsigned int)buffersize, path, fileAoffset, fileAlength);
     javaEnvironment->ReleaseStringUTFChars(apkPath, path);
 }
 
-extern "C" JNIEXPORT void Java_com_superpowered_crossexample_MainActivity_onPlayPause(JNIEnv * __unused javaEnvironment, jobject __unused obj, jboolean play) {
+extern "C" JNIEXPORT void Java_com_superpowered_player_MainActivity_onPlayPause(JNIEnv * __unused javaEnvironment, jobject __unused obj, jboolean play) {
 	example->onPlayPause(play);
 }
