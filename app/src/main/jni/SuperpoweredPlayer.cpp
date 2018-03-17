@@ -13,7 +13,15 @@ static void playerEventCallbackA(void *clientData, SuperpoweredAdvancedAudioPlay
         //player->setBpm(126.0f);
         //player->setFirstBeatMs(353);
         //player->setPosition(player->firstBeatMs, false, false);
-    };
+        //player->looping = false;
+    }
+
+    if (event == SuperpoweredAdvancedAudioPlayerEvent_EOF) {
+        SuperpoweredAdvancedAudioPlayer *player = *((SuperpoweredAdvancedAudioPlayer **) clientData);
+
+        bool *stopLooping = (bool *) value;
+        *stopLooping = player->looping == false;
+    }
 }
 
 
@@ -28,7 +36,7 @@ SuperpoweredPlayer::SuperpoweredPlayer(unsigned int samplerate, unsigned int buf
 
     audioPlayer = new SuperpoweredAdvancedAudioPlayer(&audioPlayer , playerEventCallbackA, samplerate, 0);
     audioPlayer->open(path, fileAoffset, fileAlength);
-
+    audioPlayer->looping = false;
 
     audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, false, true, audioProcessing,
                                                  this, -1, SL_ANDROID_STREAM_MEDIA, buffersize * 2);
@@ -45,8 +53,8 @@ void SuperpoweredPlayer::onPlayPause(bool play) {
         audioPlayer->pause();
 
     } else {
-        bool masterIsA = (crossValue <= 0.5f);
-        audioPlayer->play(!masterIsA);
+        //bool masterIsA = (crossValue <= 0.5f);
+        audioPlayer->play(false);
 
     };
     SuperpoweredCPU::setSustainedPerformanceMode(play); // <-- Important to prevent audio dropouts.
