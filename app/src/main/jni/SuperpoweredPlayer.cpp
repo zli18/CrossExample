@@ -34,9 +34,10 @@ static void playerEventCallback(void *clientData,
 
     } else if (event == SuperpoweredAdvancedAudioPlayerEvent_LoopEnd) {
 
-        Info *info = (Info *) clientData;
-        (info->count)--;
-        if (info->count == 0) {
+        SuperpoweredPlayer *player = (SuperpoweredPlayer *)clientData;
+        player->count--;
+
+        if (player->count == 0) {
             bool *stopLooping = (bool *) value;
             *stopLooping = false;
         }
@@ -56,14 +57,10 @@ SuperpoweredPlayer::SuperpoweredPlayer(unsigned int samplerate, unsigned int buf
         : activeFx(0), crossValue(0.0f), volume(1.0f * headroom) {
     stereoBuffer = (float *) memalign(16, (buffersize + 16) * sizeof(float) * 2);
 
-    Info *info = new Info();
-    info->count = 3;
-
-    audioPlayer = new SuperpoweredAdvancedAudioPlayer(info,
+    audioPlayer = new SuperpoweredAdvancedAudioPlayer(this,
                                                       playerEventCallback, samplerate, 0);
     audioPlayer->open(path, fileAoffset, fileAlength);
-    //audioPlayer->loop(0, 3000, true, 255, false);
-    //audioPlayer->loopCount = 3;
+
     audioPlayer->looping = true;
 
     audioSystem = new SuperpoweredAndroidAudioIO(samplerate, buffersize, false, true,

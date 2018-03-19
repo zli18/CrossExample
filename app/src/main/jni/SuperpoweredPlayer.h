@@ -31,12 +31,10 @@ private:
     unsigned char activeFx;
     float crossValue, volume;
 
-
-};
-
-class Info {
 public:
-	int count;
+	int count=3;
+
 };
+
 
 #endif
