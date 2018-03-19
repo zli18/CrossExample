@@ -30,6 +30,13 @@ private:
     float *stereoBuffer;
     unsigned char activeFx;
     float crossValue, volume;
+
+
+};
+
+class Info {
+public:
+	int count;
 };
 
 #endif

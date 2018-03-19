@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(File convertedFile) {
                 // So fast? Love it!
-                File file = new File(MainActivity.this.getFilesDir(), "mx12-ifbirdwants-loop.wav");
+                File file = new File(MainActivity.this.getFilesDir(), "count3wav.wav");
                 final int fileLengthBytes = (int) file.length();
 
                 SuperpoweredPlayer(
