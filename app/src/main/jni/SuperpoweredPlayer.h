@@ -32,7 +32,7 @@ private:
     float crossValue, volume;
 
 public:
-	int count=3;
+	int count=20;
 
 };
 

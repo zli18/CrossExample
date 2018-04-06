@@ -2,12 +2,18 @@ package com.superpowered.player;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.media.AudioManager;
 import android.content.Context;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.os.Build;
 import android.widget.Button;
@@ -27,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        copyResources(R.raw.blues_loop_mp3);
+
         if (Build.VERSION.SDK_INT >= 17) {
             AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
             samplerateString = audioManager.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -38,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         AndroidAudioConverter.load(this, new ILoadCallback() {
             @Override
             public void onSuccess() {
-                convert("mx12-ifbirdwants-loop.mp3");
+                convert("blues_loop_mp3.mp3");
             }
 
             @Override
@@ -50,19 +58,50 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void convert(String filename) {
+    public void copyResources(int resId){
+        Log.i("Test", "Setup::copyResources");
+        InputStream in = this.getResources().openRawResource(resId);
+        String filename = this.getResources().getResourceEntryName(resId);
+        if(filename.endsWith("mp3")){
+            filename += ".mp3";
+        }else
+        {
+            filename += ".wav";
+        }
+
+        File f = new File(filename);
+
+        if(!f.exists()){
+            try {
+                OutputStream out = new FileOutputStream(new File(this.getFilesDir(), filename));
+                byte[] buffer = new byte[1024];
+                int len;
+                while((len = in.read(buffer, 0, buffer.length)) != -1){
+                    out.write(buffer, 0, len);
+                }
+                in.close();
+                out.close();
+            } catch (FileNotFoundException e) {
+                Log.i("Test", "Setup::copyResources - "+e.getMessage());
+            } catch (IOException e) {
+                Log.i("Test", "Setup::copyResources - "+e.getMessage());
+            }
+        }
+    }
+
+    private void convert(final String filename) {
         File mp3File = new File(this.getFilesDir(), filename);
         IConvertCallback callback = new IConvertCallback() {
             @Override
             public void onSuccess(File convertedFile) {
                 // So fast? Love it!
-                File file = new File(MainActivity.this.getFilesDir(), "count3wav.wav");
-                final int fileLengthBytes = (int) file.length();
+                //File file = new File(MainActivity.this.getFilesDir(), filename.replace(".mp3", ".wav"));
+                final int fileLengthBytes = (int) convertedFile.length();
 
                 SuperpoweredPlayer(
                         Integer.parseInt(samplerateString),
                         Integer.parseInt(buffersizeString),
-                        file.getPath(),
+                        convertedFile.getPath(),
                         0,
                         fileLengthBytes);
             }
@@ -73,9 +112,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         AndroidAudioConverter.with(this)
-                // Your current audio file
+                // Your current audio_wav file
                 .setFile(mp3File)
-                // Your desired audio format
+                // Your desired audio_wav format
                 .setFormat(AudioFormat.WAV)
                 // An callback to know when conversion is finished
                 .setCallback(callback)
